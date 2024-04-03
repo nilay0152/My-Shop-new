@@ -1,0 +1,90 @@
+﻿
+@using Kendo.Mvc.UI
+@{
+    ViewBag.Title = "Email Template";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var permission = ViewBag.Permission as SMS.Model.FormRoleMapping;
+}
+<link href="~/Content/kendo/2017.2.621/kendo.common.min.css" rel="stylesheet" />
+<link href="~/Content/kendo/2017.2.621/kendo.metro.min.css" rel="stylesheet" />
+<link href="~/Content/kendo/2017.2.621/kendo.default.min.css" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/font-awesome/css/font-awesome.min.css")" />
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/et-line-icon/fonts/et-line.css")" />
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/line-awesome-icon/css/line-awesome.min.css")" />
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/material-icons/material-icon.css")" />
+<script src="~/Scripts/kendo/kendo.all.min.js"></script>
+<script src="~/Scripts/kendo/kendo.aspnetmvc.min.js"></script>
+@*<script src="~/Kendo/js/jquery.min.js"></script>*@
+@*<script src="~/Kendo/js/kendo.all.min.js"></script>*@
+<script src="~/Kendo/js/kendo.aspnetmvc.min.js"></script>
+@*<div class="coman_content">*@
+<!--This is Title div -->
+<div class="subheader">
+    <div class="left_title">
+        <h2>@ViewBag.Title</h2>
+
+    </div>
+    <div class="subheader_right">
+        @if (permission.AllowInsert)
+        {
+            <a class="button button_primary button_rounded" href="@Url.Action("Create", "EmailTemplate")">Add EmailTemplate</a>
+        }
+    </div>
+</div>
+
+
+
+<div class="common_white_box listingpage">
+    <div class="page-loader k-loading-image"></div>
+
+    @(Html.Kendo().Grid<SMS.Model.EmailTemplate>()
+            .Name("gridEmailTemplate")
+            .AutoBind(false)
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.Name).Width(200).Title("Name");
+                columns.Bound(c => c.TemplateCode).Width(200).Title("Template Code");
+                columns.Bound(c => c.Subject).Width(500).Title("Subject");
+                columns.Bound(c => c.IsActive).Width("5%").HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center-text" }).ClientTemplate("# if(IsActive == true) {#<i class='fa fa-check'></i># } else { #<i class='fa fa-close'></i># } #").Title("Active").Filterable(filterable => filterable.Messages(m => m.IsFalse("No").IsTrue("Yes")));
+                columns.Bound(c => c.Id).HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center_text" }).ClientTemplate("<div class='k_action_table'>" + ("<a title='Edit' href='" + Url.Action("Create", "EmailTemplate") + "/#=Id#'" + "><i class='fa fa-edit'></i></a>") + "</div>").Filterable(false).Title("Edit").Width("5%").Sortable(false).Hidden(!permission.AllowInsert);
+                columns.Bound(c => c.UpdatedOn).Hidden(true);
+            })
+            .NoRecords("No record found")
+            .Events(evt => evt
+               .DataBinding("fnKendoGridCommonDataBinding")
+               .DataBound("fnKendoGridDataBoundEvent")
+            )
+            .Sortable()
+            .Filterable(filter => filter
+                .Mode(GridFilterMode.Row)
+                .Extra(false)
+                .Operators(o => o.ForString(f => f.Clear().Contains("Contains").DoesNotContain("Does Not Contain").StartsWith("Starts With").EndsWith("Ends With").IsEqualTo("Equal To").IsNotEqualTo("Not Equal To")))
+                .Operators(o => o.ForNumber(g => g.Clear().IsEqualTo("EqualTo").IsNotEqualTo("Not Equal To").IsGreaterThan("Greater Than").IsGreaterThanOrEqualTo("Greater Than Or Equal To").IsLessThan("Less Than").IsLessThanOrEqualTo("Less Than Or Equal To")))
+            )
+            .Pageable(pageable => pageable
+                .Refresh(true)
+                .PageSizes(new[] {10,20, 50, 100, 200 })
+                .ButtonCount(5)
+            )
+             .DataSource(dataSource => dataSource
+                 .Ajax()
+                 .Sort(sortable=>sortable.Add("Name").Ascending())
+                 .Read(read => read.Action("GetGridData", "EmailTemplate")).PageSize(10)
+             )
+    )
+</div>
+@*</div>*@
+
+<script>
+
+        $(document).ready(function () {
+            $('#gridEmailTemplate').data('kendoGrid').dataSource.read();
+            $('#gridEmailTemplate').data('kendoGrid').refresh();
+        });
+        $(document).ajaxComplete(function () {
+            $(".page-loader").css("display", "none");
+            $(window).resize();
+        });
+</script>
+
+

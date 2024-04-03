@@ -1,0 +1,87 @@
+@using Kendo.Mvc.UI
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @Scripts.Render("~/bundles/kendo")
+}
+
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/font-awesome/css/font-awesome.min.css")" />
+<!DOCTYPE html>
+<html lang="en">
+
+
+<body>
+    <div class="from-design" style="margin-left:90px">
+        <div class="dashboard-title-widgets">
+            <h3>System Summary </h3>
+
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="white_box widgetBox widgetBox1 clearfix text-center mb0">
+                    <h3>@ViewBag.TotalStudent</h3>
+                    <div class="widgetTitle">
+                        <a href='@Url.Action("Index","Student")'>Total Student</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="white_box widgetBox widgetBox2  clearfix text-center mb0">
+                    <h3>@ViewBag.TotalTeacher</h3>
+                    <div class="widgetTitle">
+                        <a href='@Url.Action("Index","Teacher")'>Total Teacher</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="white_box widgetBox widgetBox3 clearfix text-center mb0">
+                    <h3>@ViewBag.TotalAnnouncement</h3>
+                    <div class="widgetTitle">
+                        <a href='@Url.Action("Index","Annoucement")'>Total Announcement</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="white_box widgetBox widgetBox4 clearfix text-center mb0">
+                    <h3>@ViewBag.TotalUser</h3>
+                    <div class="widgetTitle">
+                        <a href='@Url.Action("DisplayUser","UserMaster")'>Total User</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="from-design" style="margin-left:90px">
+        <div class="common_white_box listingpage">
+            @(Html.Kendo().Chart<SMS.Model.BarChartModel>()
+             .Name("chart")
+             .Title("Students As Per Class")
+             .Legend(legend => legend
+             .Position(ChartLegendPosition.Bottom)
+             )
+             .DataSource(ds => ds.Read(read => read.Action("Read", "Home")))
+             .Series(series =>
+             {
+                 series.Column(model => model.Student).Name("Total Students");
+             })
+             .CategoryAxis(axis => axis.Categories(model => model.Class)
+             )
+             .Tooltip(tooltip => tooltip
+             .Visible(true)
+             .Template("#= series.name #: #= value #")
+             )
+            )
+
+        </div>
+        </div>
+        <script src="Content/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+<script>
+
+
+</script>
+
+

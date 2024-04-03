@@ -1,0 +1,67 @@
+﻿@model SMS.Model.User
+
+@{
+    ViewBag.Title = "Create User";
+}
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/font-awesome/css/font-awesome.min.css")" />
+<!DOCTYPE html>
+<html lang="en">
+
+
+<body>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="from-design" style="margin-left:90px">
+        <h2>Create User</h2>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        <label style="margin-right:50px; margin-left:145px">User Name <sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+        <div class="col-md-2" style="width:28%; margin-left:-50px; margin-right:10px">
+            @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" >
+        <label style="margin-right:50px; margin-left:145px">Email Id <sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+        <div class="col-md-2" style="width:28%; margin-left:-50px; margin-right:10px">
+            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label style="margin-right:50px; margin-left:145px">Password <sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+        <div class="col-md-2" style="width:28%; margin-left:-50px; margin-right:10px">
+            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" >
+        <label style="margin-right:50px; margin-left:145px">Confirm Password <sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+        <div class="col-md-2" style="width:28%; margin-left:-50px; margin-right:10px">
+            @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+        <div class="form-group"  style="margin-left:200px">
+            <div class="col-md-offset-1 col-md-10">
+                <input type="submit" value="Create" class="btn btn-primary" /> 
+                @Html.ActionLink("Back to List", "DisplayUser", new { }, htmlAttributes: new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}
+
+<script src="Content/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

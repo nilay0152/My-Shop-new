@@ -1,0 +1,155 @@
+﻿@using Kendo.Mvc.UI
+@using SMS.Helper
+@using SMS.Model
+@using SMS.Service
+@using SMS.Model
+@using SMS.Data
+@using SMS.Controllers
+
+@{
+    ViewBag.Title = "Announcement List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var permission = ViewBag.Permission as SMS.Model.FormRoleMapping;
+    string formCode = AuthorizeFormAccess.FormAccessCode.ROLES.ToString();
+    RoleMasterService roleMasterService = new RoleMasterService();
+    UserMasterService userMasterService = new UserMasterService();
+    string role = roleMasterService.GetRolesById(SessionHelper.RoleId).RoleName;
+    //string user = userMasterService.GetUserById(SessionHelper.UserId == SessionHelper.RoleId)
+    BaseController _base = new BaseController();
+    bool AllowedEdit = _base.CheckPermission(formCode, AcessPermission.IsEdit);
+    bool AllowedAdd = _base.CheckPermission(formCode, AcessPermission.IsAdd);
+    bool AllowedDelete = _base.CheckPermission(formCode, AcessPermission.IsDelete);
+    @Scripts.Render("~/bundles/kendo")
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+<div class="subheader">
+    <div class="left_title">
+        <h2 style="margin-left:45px">@ViewBag.Title</h2>
+
+    </div>
+    <div class="subheader_right">
+        @if (TempData["Message"] != null)
+        {
+            <label class="bg-success text-white alertmsg"> @TempData["Message"]</label>
+        }
+        @if (permission.AllowInsert)
+        {
+            <a class="button button_primary button_rounded" href="@Url.Action("AddAnnoucement", "Annoucement")" style="margin-right:45px">Add Announcement</a>
+        }
+    </div>
+</div>
+
+
+<div class="common_white_box listingpage" style="margin-left: 40px; margin-right: 40px">
+    <div class="page-loader k-loading-image"></div>
+
+    @(Html.Kendo().Grid<SMS.Model.AnnoucementModel>()
+                .Name("gridAncmt")
+                .AutoBind(false)
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.CreatedOn).Title("Date").Format("{0:" + CommonUtility.GetDateFormat(true) + "}").Width("5%").Filterable(false);
+                    columns.Bound(c => c.Subject).Width("10%").Title("Announcement");
+                    //columns.Bound(c => c.AnnoucementDetail).Width("10%").Title("Announcement");
+                    if (role == "sadmin")
+                    {
+                        columns.Bound(c => c.Id).HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center_text" }).ClientTemplate("<div class='k_action_table'>" + (permission.AllowView ? "<a href='javascript://' onclick=\"fnShowDetails(#= Id #)\"><i class='fa fa-eye'></i></a>" : "") + ("<a title='Edit' href='" + Url.Action("EditAnnoucement", "Annoucement") + "/#=Id#'" + "><i class='fa fa-edit'></i></a>") + "</div>").Filterable(false).Title("Action").Width("5%").Sortable(false).Hidden(!permission.AllowInsert);
+                    }
+                    else {
+                        columns.Bound(c => c.Id).HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center_text" }).ClientTemplate("<div class='k_action_table'>" + (permission.AllowView ? "<a href='javascript://' onclick=\"fnShowDetails(#= Id #)\"><i class='fa fa-eye'></i></a>" : "")).Filterable(false).Title("Action").Width("8%").Sortable(false);
+                    }
+
+                })
+                .NoRecords("No record found")
+                .Events(evt => evt
+                   .DataBinding("fnKendoGridCommonDataBinding")
+                   .DataBound("fnKendoGridDataBoundEvent")
+                )
+                .Pageable(pageable => pageable
+                    .Refresh(true)
+                    .PageSizes(new[] { 10, 20, 50, 100, 200 })
+                    .ButtonCount(5)
+                )
+                .Sortable()
+                .Filterable(filter => filter
+                    .Mode(GridFilterMode.Row)
+                    .Extra(false)
+                    .Operators(o => o.ForString(f => f.Clear().Contains("Contains").DoesNotContain("Does Not Contain").StartsWith("Starts With").EndsWith("Ends With").IsEqualTo("Equal To").IsNotEqualTo("Not Equal To")))
+                    .Operators(o => o.ForNumber(g => g.Clear().IsEqualTo("EqualTo").IsNotEqualTo("Not Equal To").IsGreaterThan("Greater Than").IsGreaterThanOrEqualTo("Greater Than Or Equal To").IsLessThan("Less Than").IsLessThanOrEqualTo("Less Than Or Equal To")))
+                )
+
+                 .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Sort(sortable=>sortable.Add("CreatedOn").Ascending())
+                     .Read(read => read.Action("GetGridData", "Annoucement")).PageSize(10)
+                     .Destroy(update => update.Action("Delete", "Annoucement"))
+                     .Model(model => model.Id(p => p.Id))
+                 )
+                 .Editable(Id => Id.Mode(GridEditMode.InLine).ConfirmDelete("Are you sure you want to delete?").DisplayDeleteConfirmation("Are you sure you want to delete?"))
+        )
+
+
+</div>
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $('#gridAncmt').data('kendoGrid').dataSource.read();
+        $('#gridAncmt').data('kendoGrid').refresh();
+    });
+    $(document).ajaxComplete(function () {
+        $(".page-loader").css("display", "none");
+        $(window).resize();
+    });
+
+     function fnShowDetails(Id) {
+         var popupTitle = 'Announcement Details';
+        var popupURL = "@Url.Action("AnnoucementDetails", "Annoucement")";
+
+        $.confirm({
+            animation: 'bottom',
+            title: popupTitle,
+            backgroundDismiss: true,
+            closeIcon: true,
+            useBootstrap: false,
+            columnClass: 'popup_l',
+            content: function () {
+                var self = this;
+                return fnCallAjaxHttpGetEvent(popupURL, { Id: Id }, true, true, function (data) {
+                    self.setContent(data);
+                });
+            }
+        });
+    }
+    function DisplayControllName(ControllName) {
+        var str = ControllName;
+        var result = "";
+        result = str.split("/")[0];
+        return result;
+    }
+    function DisplayMethodName(MethodName) {
+        var str = MethodName;
+        var result = "";
+        result = str.split("/")[1];
+        return result;
+    }
+    var message = $('#Message').text();
+    if (message != '') {
+        toastr.success(message);
+    }
+
+    $(document).ready(function () {
+        var successElement = $(".alertmsg");
+        if (successElement) {
+            setTimeout(function () { successElement.hide(); }, 2000);
+        }
+    });
+</script>
+
+
+
+
+

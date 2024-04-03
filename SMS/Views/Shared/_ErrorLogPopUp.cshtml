@@ -1,0 +1,30 @@
+﻿﻿@model SMS.Model.AnnoucementModel
+<div class="form_element">
+    <div class="page-loader k-loading-image" style="display:none;"></div>
+    <div class="form_input_box">
+        <div class="form-group">
+            <label for="">Date :</label>
+            <div class="input_box">
+                <label>@Model.CreatedOn </label>
+            </div>
+        </div>
+    </div>
+    <div class="form_input_box">
+        <div class="form-group">
+            <label for="">Subject :</label>
+            <div class="input_box">
+                <label>@Model.Subject </label>
+            </div>
+        </div>
+    </div>
+    <div class="form_input_box">
+        <div class="form-group">
+            <label for="">Announcement :</label>
+            <div>
+                @Html.Raw(Model.AnnoucementDetail)
+                </div>
+            </div>
+    </div>
+    
+</div>
+

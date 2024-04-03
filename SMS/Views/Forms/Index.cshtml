@@ -1,0 +1,94 @@
+﻿
+
+@using Kendo.Mvc.UI
+
+
+@{
+    ViewBag.Title = "Form List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var permission = ViewBag.Permission as SMS.Model.FormRoleMapping;
+    @Scripts.Render("~/bundles/kendo")
+}
+
+<div class="subheader">
+    <div class="left_title">
+        <h2 style="margin-left:45px">@ViewBag.Title</h2>
+
+    </div>
+    <div class="subheader_right">
+        @if (TempData["Message"] != null)
+        {
+            <label class="bg-success text-white alertmsg"> @TempData["Message"]</label>
+        }
+        @if (permission.AllowInsert)
+        {
+            <a class="button button_primary button_rounded" href="@Url.Action("Create", "Forms")" style="margin-right:45px">Add Form</a>
+        }
+    </div>
+</div>
+
+<div class="common_white_box listingpage" style="margin-left: 40px; margin-right: 40px">
+    <div class="page-loader k-loading-image"></div>
+
+    @(Html.Kendo().Grid<SMS.Model.FormModel>()
+            .Name("gridForm")
+            .AutoBind(false)
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.Name).Width("10%").Title("Name");
+                columns.Bound(c => c.NavigateURL).Width("10%").Title("Navigate URL");
+                columns.Bound(c => c.FormAcessCode).Width("10%").Title("Code");
+                columns.Bound(c => c.DisplayOrder).Width("10%").Title("Display Order");
+                columns.Bound(c => c.IsActive).Width("5%").HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center-text" }).ClientTemplate("# if(IsActive == true) {#<i class='fa fa-check'></i># } else { #<i class='fa fa-close'></i># } #").Title("Active").Filterable(filterable => filterable.Messages(m => m.IsFalse("No").IsTrue("Yes")));
+                columns.Bound(c => c.IsDisplayMenu).Width("5%").HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center-text" }).ClientTemplate("# if(IsActive == true) {#<i class='fa fa-check'></i># } else { #<i class='fa fa-close'></i># } #").Title("Display Menu").Filterable(filterable => filterable.Messages(m => m.IsFalse("No").IsTrue("Yes")));
+                columns.Bound(c => c.Id).HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center_text" }).ClientTemplate("<div class='k_action_table'>" + ("<a title='Edit' href='" + Url.Action("Create", "Forms") + "/#=Id#'" + "><i class='fa fa-edit'></i></a>") + "</div>").Filterable(false).Title("Edit").Width("5%").Sortable(false).Hidden(!permission.AllowInsert);
+            })
+   .NoRecords("No record found")
+   .Events(evt=>
+    evt
+    .DataBinding("fnKendoGridCommonDataBinding")
+    .DataBound("fnKendoGridDataBoundEvent")
+    )
+    .Sortable()
+    .Filterable(filter => filter
+    .Mode(GridFilterMode.Row)
+    .Extra(false)
+    .Operators(o => o.ForString(f => f.Clear().Contains("Contains").DoesNotContain("Does Not Contain").StartsWith("Starts With").EndsWith("Ends With").IsEqualTo("Equal To").IsNotEqualTo("Not Equal To")))
+    .Operators(o => o.ForNumber(g => g.Clear().IsEqualTo("EqualTo").IsNotEqualTo("Not Equal To").IsGreaterThan("Greater Than").IsGreaterThanOrEqualTo("Greater Than Or Equal To").IsLessThan("Less Than").IsLessThanOrEqualTo("Less Than Or Equal To")))
+    )
+    .Pageable(pageable => pageable
+    .Refresh(true)
+    .PageSizes(new[] {5,10,20, 50, 100, 200 })
+    .ButtonCount(5)
+    )
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .Sort(sortable=>sortable.Add("DisplayOrder").Ascending())
+    .Read(read => read.Action("GetGridData", "Forms")).PageSize(10)
+
+    )
+
+    )
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $('#gridForm').data('kendoGrid').dataSource.read();
+        $('#gridForm').data('kendoGrid').refresh();
+    });
+    $(document).ajaxComplete(function () {
+        $(".page-loader").css("display", "none");
+        $(window).resize();
+    });
+    $(document).ready(function () {
+        var successElement = $(".alertmsg");
+        if (successElement) {
+            setTimeout(function () { successElement.hide(); }, 2000);
+        }
+    });
+
+</script>
+
+

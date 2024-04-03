@@ -1,0 +1,134 @@
+﻿
+@using Kendo.Mvc.UI
+@using SMS.Service
+@using SMS.Model
+@using SMS.Data
+@using SMS.Controllers
+@{
+    ViewBag.Title = "Teacher List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var permission = ViewBag.Permission as SMS.Model.FormRoleMapping;
+    string formCode = AuthorizeFormAccess.FormAccessCode.ROLES.ToString();
+    RoleMasterService roleMasterService = new RoleMasterService();
+    UserMasterService userMasterService = new UserMasterService();
+    string role = roleMasterService.GetRolesById(SessionHelper.RoleId).RoleName;
+    BaseController _base = new BaseController();
+    bool AllowedEdit = _base.CheckPermission(formCode, AcessPermission.IsEdit);
+    bool AllowedAdd = _base.CheckPermission(formCode, AcessPermission.IsAdd);
+    bool AllowedDelete = _base.CheckPermission(formCode, AcessPermission.IsDelete);
+    @Scripts.Render("~/bundles/kendo")
+}
+
+
+<div class="subheader">
+    <div class="left_title">
+        <h2 style="margin-left:45px">@ViewBag.Title</h2>
+        @ViewBag.added
+
+    </div>
+    <div class="subheader_right">
+        @if (TempData["Message"] != null)
+        {
+            <label class="bg-success text-white alertmsg"> @TempData["Message"]</label>
+        }
+
+        @if (permission.AllowInsert)
+        {
+            <a class="button button_primary button_rounded" href="@Url.Action("AddTeacher", "Teacher")" style="margin-right:45px">Add Teacher</a>
+        }
+    </div>
+</div>
+
+
+<div class="common_white_box listingpage" style="margin-left: 40px; margin-right: 40px">
+    <div class="page-loader k-loading-image"></div>
+
+    @(Html.Kendo().Grid<SMS.Model.TeacherModel>()
+            .Name("gridTeacher")
+            .AutoBind(false)
+            .Columns(columns =>
+            {
+            columns.Bound(c => c.FirstName).Width("10%").Title("First Name");
+            columns.Bound(c => c.LastName).Width("10%").Title("Last Name");
+            columns.Bound(c => c.Email).Width("10%").Title("Email");
+            columns.Bound(c => c.MobileNumber).Width("10%").Title("Contact Number");
+            columns.Bound(c => c.IsActive).Width("5%").HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center-text" }).ClientTemplate("# if(IsActive == true) {#<i class='fa fa-check'></i># } else { #<i class='fa fa-close'></i># } #").Title("Active").Filterable(filterable => filterable.Messages(m => m.IsFalse("No").IsTrue("Yes")));
+
+            if (role == "sadmin")
+            {
+                columns.Bound(c => c.Id).HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center_text" }).ClientTemplate("<div class='k_action_table'>" + ("<a title='Edit' href='" + Url.Action("EditTeacher", "Teacher") + "/#=Id#'" + "><i class='fa fa-edit'></i></a>") + (permission.AllowDelete ? "<a title='Delete'onclick=Delete('#: Id #') ><i class='fa fa-trash-o' style='font-size:17px'></i></a>" : "") + "</div>").Filterable(false).Title("Action").Width("5%").Sortable(false);
+                }
+                else
+                {
+                    columns.Bound(c => c.Id).HeaderHtmlAttributes(new { @class = "center_text" }).HtmlAttributes(new { @class = "kendogrid_Action center_text" }).ClientTemplate("<div class='k_action_table'>" + ("<a title='Edit' href='" + Url.Action("EditTeacher", "Teacher") + "/#=Id#'" + "><i class='fa fa-edit'></i></a>") + "</div>").Filterable(false).Title("Edit").Width("5%").Sortable(false).Hidden(!permission.AllowInsert);
+                }
+            })
+            .NoRecords("No record found")
+            .Events(evt => evt
+               .DataBinding("fnKendoGridCommonDataBinding")
+               .DataBound("fnKendoGridDataBoundEvent")
+            )
+            .Sortable()
+            .Filterable(filter => filter
+                .Mode(GridFilterMode.Row)
+                .Extra(false)
+                .Operators(o => o.ForString(f => f.Clear().Contains("Contains").DoesNotContain("Does Not Contain").StartsWith("Starts With").EndsWith("Ends With").IsEqualTo("Equal To").IsNotEqualTo("Not Equal To")))
+                .Operators(o => o.ForNumber(g => g.Clear().IsEqualTo("EqualTo").IsNotEqualTo("Not Equal To").IsGreaterThan("Greater Than").IsGreaterThanOrEqualTo("Greater Than Or Equal To").IsLessThan("Less Than").IsLessThanOrEqualTo("Less Than Or Equal To")))
+            )
+            .Pageable(pageable => pageable
+                .Refresh(true)
+                .PageSizes(new[] {5,10,20, 50, 100, 200 })
+                .ButtonCount(5)
+            )
+             .DataSource(dataSource => dataSource
+                 .Ajax()
+                 .Sort(sortable=>sortable.Add("FirstName").Ascending())
+                 .Read(read => read.Action("GetGridData", "Teacher")).PageSize(10)
+                 .Destroy(update => update.Action("Delete", "Teacher"))
+                 .Model(model => model.Id(p => p.Id))
+             )
+             .Editable(Id => Id.Mode(GridEditMode.InLine).ConfirmDelete("Are you sure you want to delete?").DisplayDeleteConfirmation("Are you sure you want to delete?"))
+    )
+</div>
+
+@*</div>*@
+
+
+<script>
+
+    $(document).ready(function () {
+        $('#gridTeacher').data('kendoGrid').dataSource.read();
+        $('#gridTeacher').data('kendoGrid').refresh();
+    });
+    $(document).ajaxComplete(function () {
+        $(".page-loader").css("display", "none");
+        $(window).resize();
+    });
+    var message = $('#Message').text();
+    if (message != '') {
+        toastr.success(message);
+    }
+
+    $(document).ready(function () {
+        var successElement = $(".alertmsg");
+        if (successElement) {
+            setTimeout(function () { successElement.hide(); }, 2000);
+        }
+    });
+    function Delete(id) {
+        debugger;
+        if (confirm("Are you sure you want to delete ?") == true) {
+
+            $.get('/Teacher/Delete', { Id: id }, function () {
+                $('#gridTeacher').data('kendoGrid').dataSource.read();
+                $('#gridTeacher').data('kendoGrid').refresh();
+            });
+        }
+        else {
+            return false;
+        }
+
+    }
+</script>
+
+

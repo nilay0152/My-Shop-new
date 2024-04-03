@@ -1,0 +1,85 @@
+﻿@model SMS.Model.TeacherModel
+
+@{
+    ViewBag.Title = "EditTeacher";
+}
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/font-awesome/css/font-awesome.min.css")" />
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<body>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="from-design" style="margin-left:90px">
+            <h2>Edit</h2>
+            <h4>Teacher Deatils</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="form-group">                
+                <label style="margin-right:50px; margin-left:145px">First Name <sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+                <div class="col-md-2" style="width:28%; margin-left:-50px; margin-right:10px">
+                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">              
+                <label style="margin-right:50px; margin-left:145px">Last Name <sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+                <div class="col-md-2" style="width:28%; margin-left:-50px; margin-right:10px">
+                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">              
+                <label style="margin-right:50px; margin-left:145px">Email Id <sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+                <div class="col-md-2" style="width: 28%; margin-left: -50px; margin-right: 10px">
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">              
+                <label style="margin-right:50px; margin-left:145px">Contact Number<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+                <div class="col-md-2" style="width: 28%; margin-left: -50px; margin-right: 10px">
+                    @Html.EditorFor(model => model.MobileNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.MobileNumber, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="margin-right:50px; margin-left:159px">Is Active<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+                <div class="col-md-10">
+                    <div class="input_box">
+                        <div class="on_off_btn sms_not">
+                            @Html.CheckBoxFor(model => model.IsActive, new { @class = "ch_btn" })
+                            <i></i>
+                            <span class="span_yes">Yes</span>
+                            <span class="span_no">No</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-left:200px">
+                <div class="col-md-offset-1 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-primary" /> 
+                    @Html.ActionLink("Back to List", "Index", new { }, htmlAttributes: new { @class = "btn btn-default" })
+                </div>
+            </div>
+        </div>
+    }
+
+    <script src="Content/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

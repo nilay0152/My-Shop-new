@@ -1,0 +1,100 @@
+﻿@model SMS.Model.StudentModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/font-awesome/css/font-awesome.min.css")" />
+<!DOCTYPE html>
+<html lang="en">
+
+
+<body>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="from-design" style="margin-left:90px">
+        <h2>Edit</h2>
+        <h4>Student Details</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.StudentId)
+        
+    <div class="form-group" >
+         <label style="margin-right:50px; margin-left:145px">First Name<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+        <div class="col-md-2" style="width:28%; margin-left:-50px; margin-right:10px">
+            @Html.EditorFor(model => model.Firstname, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Firstname, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+        <div class="form-group">
+            <label style="margin-right:50px; margin-left:145px">Last Name<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+            <div class="col-md-2" style="width: 28%; margin-left: -50px; margin-right: 10px">
+                @Html.EditorFor(model => model.Lastname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Lastname, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="margin-right:50px; margin-left:145px">Age<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+            <div class="col-md-2" style="width: 28%; margin-left: -50px; margin-right: 10px">
+                @Html.EditorFor(model => model.Age, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="margin-right:50px; margin-left:160px">Gender<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+            <div class="col-md-10">
+                <label class="radio-inline" style="font-size:17px">
+                    @Html.RadioButtonFor(model => model.Gender, "Male", new { @name = "gender" })
+                    Male
+                </label>
+                <label class="radio-inline" style="font-size:17px">
+                    @Html.RadioButtonFor(model => model.Gender, "Female", new { @name = "gender" })
+                    Female
+                </label>
+                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="margin-right:50px; margin-left:145px">Standard<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+            <div class="col-md-2" style="width: 28%; margin-left: -50px; margin-right: 10px">
+                @Html.EditorFor(model => model.Standard, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Standard, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="margin-right:50px; margin-left:145px">Email Id<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+            <div class="col-md-2" style="width: 28%; margin-left: -50px; margin-right: 10px">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="margin-right:50px; margin-left:145px">Contact Number<sup class="span_req"><i class="fa fa-star" aria-hidden="true"></i></sup></label>
+            <div class="col-md-2" style="width: 28%; margin-left: -50px; margin-right: 10px">
+                @Html.EditorFor(model => model.ContactNumber, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ContactNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-left:200px">
+            <div class="col-md-offset-1 col-md-10">
+                <input type="submit" value="Save" class="btn btn-primary" /> 
+                @Html.ActionLink("Back to List", "Index", new { }, htmlAttributes: new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}
+
+<script src="Content/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

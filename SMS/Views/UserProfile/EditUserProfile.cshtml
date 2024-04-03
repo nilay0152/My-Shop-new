@@ -1,0 +1,125 @@
+﻿@model SMS.Model.User
+@using Kendo.Mvc.UI;
+
+@{
+    ViewBag.Title = "EditUserProfile";
+   
+}
+<script src="~/Scripts/jquery-1.8.2.min.js"></script>
+@*<link href="~/Kendo/styles/kendo.common-material.min.css" rel="stylesheet" />*@
+@*<link href="~/Kendo/styles/kendo.material.min.css" rel="stylesheet" />*@
+@*<link href="~/Kendo/styles/kendo.material.mobile.min.css" rel="stylesheet" />*@
+<script src="~/Kendo/js/jquery.min.js"></script>
+<script src="~/Kendo/js/kendo.all.min.js"></script>
+@*<link href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.4/themes/dot-luv/jquery-ui.css" rel="stylesheet" />*@
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Content/inc/font-awesome/css/font-awesome.min.css")" />
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.Userid)
+    @Html.AntiForgeryToken()
+    <div class="content_box">
+        <div class="from-design" style="margin-left:90px">
+
+            <table class="table table-bordered">
+                <thead class="bg-dark text-center text-white">
+                    <tr>
+                        <th colspan="2" style="text-align:center;">Edit Profile</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>User Name</td>
+
+                        <td>
+                            @*<div class="col-md-4">
+                                <div class="input_box">*@
+                            @(Html.Kendo().TextBoxFor(model=>model.UserName).Name("userName"))
+                            @*</div>
+                                </div>*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+
+                        <td>
+                            @*<div class="col-md-4">
+                                <div class="input_box">*@
+                            @(Html.Kendo().TextBoxFor(model=>model.Email).Name("Email").HtmlAttributes(new { type = "email" }))
+                            @*</div>
+                                </div>*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mobile Number</td>
+
+                        <td>
+                            @*<div class="col-md-4">
+                                <div class="input_box">*@
+                            @(Html.Kendo().TextBoxFor(model=>model.mobileNumber).Name("mobileNumber").HtmlAttributes(new { type = "mobileNumber" }))
+                            @*</div>
+                                </div>*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Gender</td>
+
+                        <td>
+                            <div class="col-md-4">
+                                <div class="input_box">
+                                    @(Html.Kendo().RadioButtonFor(model => model.gender).Name("Male").Value("Male").Label("Male").Checked(true).HtmlAttributes(new { Name = "gender" }))
+                                    @(Html.Kendo().RadioButtonFor(model => model.gender).Name("Female").Value("Female").Label("Female").HtmlAttributes(new { Name = "gender" }))
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>DOB</td>
+
+                        <td>
+                            <div class="col-md-4">
+
+                                @*<div class="form_input_box">
+                                    <div class="form-group">*@
+
+
+                                <div class="input_box">
+                                    @(Html.Kendo().DatePickerFor(model=>model.DOB).Name("DOB"))
+                                </div>
+                                @*</div>
+                                    </div>*@
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!--<tr>
+                        <td>Profile Image</td>
+
+                        <td>-->
+                            @*<div class="col-md-4">
+                                <div class="input_box">*@
+                            @*@(Html.Kendo().Upload().Name("profileImage"))*@
+                            @*</div>
+                                </div>*@
+                        <!--</td>
+                    </tr>-->
+                    <tr>
+                        <td colspan="2" style="text-align:center;">
+                            @*@(Html.Kendo().Button().Name("btnSubmit").HtmlAttributes(new { type = "button", @class = "ml-auto k-button k-primary", style = "height:35px;width:70px;" }).Content("Save").Events(e => e.Click("btnSubmit_Click")))*@
+                            <button type="submit" class="btn btn-primary" href="@Url.Action("Logout", "Account")">Save</button>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-danger">Cancel</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+}
+
+
